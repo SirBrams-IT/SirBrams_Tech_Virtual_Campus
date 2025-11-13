@@ -1,4 +1,4 @@
-🧠 SirBrams Tech Virtual Campus
+# 🧠 SirBrams Tech Virtual Campus
 Smart Learning. Real Impact.
 
 SirBrams Tech Virtual Campus is a modern e-learning platform designed to provide accessible, inclusive, and affordable education for everyone — including remotely marginalized groups, people with disabilities, and professionals seeking to upskill in technical fields.
@@ -92,7 +92,7 @@ Git
 
 Setup Steps
 # Clone the repository
-git clone https://github.com/yourusername/sirbrams-virtual-campus.git
+git clone [https://github.com/yourusername/sirbrams-virtual-campus.git](https://github.com/SirBrams-IT/SirBrams_Tech_Virtual_Campus.git)
 cd sirbrams-virtual-campus
 
 # Create and activate a virtual environment
