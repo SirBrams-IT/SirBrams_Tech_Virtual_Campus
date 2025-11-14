@@ -1,0 +1,47 @@
+{% extends 'main-page.html' %}
+{% load static %}
+
+{% block body %}
+<div class="bg-light d-flex align-items-center justify-content-center vh-100">
+
+  <div class="card shadow-lg border-0 rounded-4 p-4" style="max-width: 500px; width: 90%;">
+    <!-- Logo -->
+    <div class="text-center mb-3">
+      <img src="{% static 'assets/img/logo.png' %}" alt="Logo" style="height: 70px; width: auto;">
+    </div>
+
+    <!-- Heading -->
+    <h4 class="text-center fw-bold mb-2">Reset Your Password</h4>
+    <p class="text-muted text-center mb-4">Enter your email address and we’ll send you an OTP to reset your password.</p>
+
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-danger text-center rounded-3 py-2">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+
+    <!-- Reset Form -->
+    <form method="POST" class="needs-validation" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email Address</label>
+        <input type="email" name="email" id="email" class="form-control rounded-3" placeholder="example@email.com" required>
+        <div class="invalid-feedback">Please enter a valid email address.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 rounded-3 fw-semibold">
+        Send OTP
+      </button>
+    </form>
+
+    <!-- Footer Links -->
+    <div class="text-center mt-4">
+      <a href="{% url 'login' %}" class="text-decoration-none small text-primary fw-semibold">
+        ← Back to Login
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

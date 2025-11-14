@@ -1,0 +1,219 @@
+{% extends 'admin_main.html' %}
+{% load static %}
+{% block  content %}
+
+<style>
+    body {
+         padding-top: 70px;
+     }
+    .table {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+
+    }
+
+    .message-cell {
+        max-width: 250px;
+        word-wrap: break-word;
+        white-space: pre-wrap; /* Ensures long text breaks properly */
+        text-align: left;
+    }
+
+    .message-content {
+        padding: 5px;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-line;
+    }
+
+    .btn-danger {
+        padding: 5px 10px;
+        font-size: 14px;
+    }
+          .dropdown-options a {
+            display: block;
+            padding: 8px 12px;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 2px 0;
+        }
+
+
+        .login-dropdown:hover .dropdown-options {
+            display: block;
+        }
+
+        .dropdown-options a:hover {
+            background-color: #007bff;
+            color: white;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .table th {
+            background: navy;
+            color: white;
+            text-align: center;
+        }
+
+
+        .table th, .table td {
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table-responsive {
+    margin-left: 1%;
+    margin-right: 1%;
+}
+
+.img-thumbnail {
+    object-fit: cover;
+    border: 2px solid #ddd;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+}
+
+@media (max-width: 600px) {
+    .table-responsive {
+        margin-left: 1%;
+        margin-right: 1%;
+    }
+
+    .btn-sm {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+}
+
+    </style>
+
+         <a href="{% url 'add_student' admininfo.id %}" class="btn btn-outline-secondary mt-3 position-fixed" style="margin-left: 90%">
+        <i class="  "></i> Add Student
+        </a>
+        </div>
+
+        <div class=" my-5 px-4">
+    <h2 class="text-center mb-4">Registered Students</h2>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover align-middle">
+            <thead class="table-primary text-center">
+                <tr>
+                    <th>S/N</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Username</th>
+                    <th>Phone</th>
+                    <th>Id No</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Image</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for x in member %}
+                <tr>
+                    <td class="text-center bg-white ">{{ forloop.counter }}</td>
+                    <td>{{ x.name }}</td>
+                    <td>{{ x.email }}</td>
+                    <td>{{ x.username }}</td>
+                    <td>{{ x.phone }}</td>
+                    <td>{{ x.id_number }}</td>
+                    <td>{{ x.date_of_birth }}</td>
+                    <td>{{ x.gender }}</td>
+                    <td class="text-center">
+                        {% if x.profile_image %}
+                            <img src="{{ x.profile_image.url }}" class="rounded-circle img-thumbnail" width="50" height="50">
+                        {% else %}
+                            <img src="{% static 'assets/img/profile.jpeg' %}" class="rounded-circle img-thumbnail" width="50" height="50">
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="#" class="btn btn-sm btn-primary" onclick="showUpdateModal('{{ x.id }}')">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="#" class="btn btn-sm btn-danger" onclick="openDeleteModal('{% url 'delete_member' x.id %}')">
+                                <i class="fas fa-trash-alt"></i> Delete
+                            </a>
+                        </div>
+                        {% if x.is_deleted %}
+                            <div class="mt-2 text-center">
+                                <a href="{% url 'restore_member' x.id %}" class="btn btn-sm btn-success">Restore</a>
+                            </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="10" class="text-center text-muted">No students found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+     <div class="modal fade" id="updateModal" tabindex="-1" aria-labelledby="updateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateModalLabel">Confirm Update</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center text-primary">
+                Are you sure you want to make changes?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <a id="confirmUpdateBtn" href="#" class="btn btn-primary">Yes, Update</a>
+            </div>
+        </div>
+    </div>
+</div>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade text-center text-white" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmLabel"><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="fw-bold text-danger">Are you sure you want to delete this student?</p>
+                    <p class="text-muted">This action cannot be undone.</p>
+                </div>
+                <div class="modal-footer me-2" >
+                    <button type="button" class="btn btn-secondary me-5" data-bs-dismiss="modal">Cancel</button>
+                    <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script>
+         function openDeleteModal(deleteUrl) {
+        // Set the href of the confirm delete button
+        document.getElementById('confirmDeleteBtn').href = deleteUrl;
+        // Open the modal
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        deleteModal.show();
+    }
+    </script>
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br>
+{% endblock %}

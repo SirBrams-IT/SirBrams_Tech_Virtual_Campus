@@ -1,0 +1,316 @@
+{% extends 'student-main.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="pagetitle">
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'student_dashboard' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active">Student Dashboard</li>
+        </ol>
+      </nav>
+
+      <h1>
+        <span id="greeting"></span>, 
+        <b class="text-warning">{{ studentinfo.name|title }}</b>!
+        <span class="ms-5 bg-black text-white current-time d-none d-lg-inline"></span>
+      </h1>
+    </div><!-- End Page Title -->
+
+    <div class="container mt-4">
+      <!-- Dashboard Stats Overview -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card dashboard-card bg-primary bg-opacity-10 border-0">
+            <div class="card-body py-3">
+              <div class="row text-center">
+                <div class="col-md-3 col-6 border-end">
+                  <h4 class="fw-bold text-primary">{{ enrolled_courses_count|default:0 }}</h4>
+                  <p class="mb-0 text-muted">Enrolled Courses</p>
+                </div>
+                <div class="col-md-3 col-6 border-end">
+                  <h4 class="fw-bold text-info">{{ active_courses_count|default:0 }}</h4>
+                  <p class="mb-0 text-muted bi bi-check-circle">Active Courses</p>
+                </div>
+                <div class="col-md-3 col-6 border-end">
+                  <h4 class="fw-bold text-success">{{ completed_assignments|default:0 }}/{{ total_assignments|default:0 }}</h4>
+                  <p class="mb-0 text-muted">Assignments Done</p>
+                </div>
+                
+                <div class="col-md-3 col-6">
+                  <h4 class="fw-bold text-warning">{{ days_streak|default:0 }}</h4>
+                  <p class="mb-0 text-muted">Day Streak</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Dashboard Cards -->
+      <div class="row justify-content-center">
+        <!-- Courses Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-top border-top-4 border-primary">
+            <div class="card-body text-center">
+              <i class="bi bi-book display-6 text-primary mb-3"></i>
+              <h5 class="card-title">Courses</h5>
+              <p class="card-text">Explore available courses and enroll.</p>
+              <a href="{% url 'available_courses' studentinfo.id %}" class="btn btn-primary btn-sm">View Courses</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enrolled courses Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-top border-top-4 border-success">
+            <div class="card-body text-center">
+              <i class="bi bi-journal-bookmark display-6 text-success mb-3"></i>
+              <h5 class="card-title">Enrolled Courses</h5>
+              <p class="card-text"> Track course and continue Learning.</p>
+              <a href="#" class="btn btn-success btn-sm">View My Courses</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignments Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-top border-top-4 border-danger">
+            <div class="card-body text-center">
+              <i class="bi bi-pencil-square display-6 text-danger mb-3"></i>
+              <h5 class="card-title">Assignments</h5>
+              <p class="card-text">Track and submit your assignments.</p>
+              <a href="#" class="btn btn-danger btn-sm">View Assignments</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chats Card -->
+        <div class="col-xl-3 col-md-6 mb-4">
+          <div class="card dashboard-card border-top border-top-4 border-info">
+            <div class="card-body text-center">
+              <i class="bi bi-chat-dots display-6 text-info mb-3"></i>
+              <h5 class="card-title">Chats</h5>
+              <p class="card-text">Communicate with mentors and peers.</p>
+              <a href="#" class="btn btn-info btn-sm">Go to Chats</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Messaging Section -->
+      <div class="row mt-4">
+        <div class="col-12">
+          <div class="card dashboard-card">
+            <div class="card-header bg-transparent d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0 text-info">Messaging Center</h5>
+              <div class="dropdown d-inline-block">
+                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" id="mentorDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="bi bi-person-lines-fill"></i> Message a Mentor
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="mentorDropdown">
+                  {% for mentor in mentors %}
+                    <li>
+                      <a class="dropdown-item" href="javascript:void(0);" onclick="startDmWithMentor({{ mentor.id }})">
+                        <img src="{% if mentor.profile_image and mentor.profile_image.url %}{{ mentor.profile_image.url }}{% else %}{% static 'asset/img/profile.jpeg' %}{% endif %}"
+                            alt="Profile" class="rounded-circle me-2" style="width:18px; height:18px; object-fit:cover;">
+                        {{ mentor.name }}
+                      </a>
+                    </li>
+                  {% empty %}
+                    <li><span class="dropdown-item text-muted">No mentors available</span></li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <!-- Conversations List -->
+                <div class="col-md-4 border-end" style="max-height: 400px; overflow-y: auto;">
+                  <div class="conversation-search mb-3">
+                    <input type="text" class="form-control" placeholder="Search conversations..." 
+                          onkeyup="filterConversations(this.value)">
+                  </div>
+                  <div id="studentConversations">
+                    <div class="text-center py-4">
+                      <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2 text-muted">Loading conversations...</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Chat Area -->
+                <div class="col-md-8">
+                  <div id="studentChatHeader" class="chat-header p-3 border-bottom">
+                    <h6 class="mb-0 text-muted">Select a conversation to start messaging</h6>
+                  </div>
+                  
+                  <div id="studentChatMessages" class="chat-messages" style="height: 300px; overflow-y: auto;">
+                    <div class="d-flex justify-content-center align-items-center h-100">
+                      <div class="text-center text-muted">
+                        <i class="bi bi-chat-left-text display-4"></i>
+                        <p class="mt-2">No conversation selected</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="chat-input p-3 border-top">
+                    <div class="input-group">
+                      <input type="text" id="studentMessageInput" class="form-control" 
+                            placeholder="Type a message..." disabled>
+                      <button id="studentSendButton" class="btn btn-primary" disabled>
+                        <i class="bi bi-send"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mentors List Modal -->
+      {% if studentinfo %}
+      <script id="student-data" type="application/json">
+        { "id": {{ studentinfo.id }} }
+      </script>
+      {% endif %}
+
+      <div id="mentorsModal" class="modal fade" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title text-info">Select a Mentor to Message</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div id="mentorsList" style="max-height: 300px; overflow-y: auto;">
+                <div class="text-center py-3">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden text-secondary">Loading...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Logout Modal -->
+    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="logoutModalLabel">Confirm Logout</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center text-danger">
+            Are you sure you want to log out?
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <a href="{% url 'logout_view' %}" class="btn btn-danger">Yes, Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade text-center text-white" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteConfirmLabel">
+              <i class="fas fa-exclamation-triangle"></i> Confirm Deletion
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-center">
+            <p class="fw-bold text-danger">Are you sure you want to delete your account?</p>
+            <p class="text-muted">This action cannot be undone.</p>
+          </div>
+          <div class="modal-footer me-2">
+            <button type="button" class="btn btn-secondary me-5" data-bs-dismiss="modal">Cancel</button>
+            <a href="#" id="confirmDeleteBtn" class="btn btn-danger">Yes, Delete</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+        {% if show_modal %}
+<div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="profileModalLabel">Complete Your Profile</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Your profile is {{ profile_percent }}% complete.</p>
+        <div class="progress mb-3" style="height: 10px;">
+          <div class="progress-bar bg-success" role="progressbar" style="width: {{ profile_percent }}%;" aria-valuenow="{{ profile_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <p>Please complete missing details like <strong>username, email, phone, ID number, date of birth, and profile picture</strong> for a better experience.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+        <a href="{% url 'student_profile'  studentinfo.id  %}" class="btn btn-primary">Complete Profile</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Show modal automatically when page loads
+  var profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+  window.addEventListener('load', function() {
+    profileModal.show();
+  });
+</script>
+{% endif %}
+ 
+  
+  <script>
+    // Set current year for copyright
+    document.getElementById('year').textContent = new Date().getFullYear();
+    
+    // Time and greeting functionality
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      document.querySelectorAll('.current-time').forEach(el => {
+        el.textContent = timeString;
+      });
+      
+      const hour = now.getHours();
+      let greeting = "Good morning";
+      if (hour >= 12 && hour < 17) {
+        greeting = "Good afternoon";
+      } else if (hour >= 17) {
+        greeting = "Good evening";
+      }
+      document.getElementById('greeting').textContent = greeting;
+    }
+    
+    // Initialize time and greeting
+    updateTime();
+    setInterval(updateTime, 60000);
+    
+    // Delete confirmation function
+    function openDeleteModal(deleteUrl) {
+      var userConfirmation = prompt("Type DELETE to confirm deletion:");
+      
+      if (userConfirmation !== null && userConfirmation.toUpperCase() === "DELETE") {
+        document.getElementById('confirmDeleteBtn').href = deleteUrl;
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        deleteModal.show();
+      } else {
+        alert("Deletion cancelled or incorrect confirmation.");
+      }
+    }
+  </script>
+{% endblock%}

@@ -1,0 +1,69 @@
+<br><br>
+{% extends 'student-main.html' %}
+
+
+{% load static %}
+
+{% block body %}
+
+
+
+      <div class="container mt-5">
+        <h2 class="text-center mb-4 text-bg-primary">Enrolled Courses</h2>
+        <div class="row">
+    {% for mycourse in coursez %}
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <!-- Video Section -->
+                {% if mycourse.video %}
+                <div class="mb-3">
+                    <video width="100%" controls>
+                        <source src="{{ mycourse.video.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                {% endif %}
+
+
+                <p class="card-text"> <strong>Course_Name:</strong>{{ mycourse.course_name }}</p>
+                <p class="card-text"><strong>Course_Code:</strong> {{ mycourse.course_code }}</p>
+                <p class="card-text"><strong>Instructor:</strong> {{ mycourse.instructor }}</p>
+                <p class="card-text"><small class="text-muted">Uploaded on: {{ mycourse.uploaded_at|date:"F j, Y, g:i a" }}</small></p>
+
+                {% if mycourse.file %}
+                <a href="{{ mycourse.file.url }}" class="btn btn-primary mb-2" download>Download Course Material</a>
+                {% endif %}
+
+                {% if mycourse.google_classroom_link %}
+                <a href="{{ mycourse.google_classroom_link }}" class="btn btn-info mb-2" target="_blank">Visit Google Classroom</a>
+                {% endif %}
+
+                {% if mycourse.zoom_link %}
+                <a href="{{ mycourse.zoom_link }}" class="btn btn " target="_blank" style="background-color: #8bb9fe">Join Zoom Class</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+ </div>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+
+ <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+{% endblock %}
+
+
+
+

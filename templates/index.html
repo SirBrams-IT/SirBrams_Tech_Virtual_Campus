@@ -1,0 +1,343 @@
+{% extends 'main-page.html' %}
+{% load static %}
+{% block body %}
+
+  <!-- Enhanced Carousel -->
+  <div id="demo" class="carousel slide" data-bs-ride="carousel" data-bs-interval="5000">
+
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+        <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+    </div>
+
+    <!-- The slideshow/carousel (only images & captions now) -->
+    <div class="carousel-inner ">
+        <!-- Slide 1 -->
+        <div class="carousel-item active">
+            <img src="{% static 'assets/img/hero-carousel/hero-carousel-1.jpg' %}" alt="Tech Education" class="d-block w-100">
+            <div class="carousel-caption">
+                <h2 class="text-white">Welcome to SirBrams Tech Virtual Campus</h2>
+                <p class="text-white">Empowering your tech journey with innovative learning experiences. Join us to unlock your potential and shape the future of technology.</p>
+                <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Get Started Today</a>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="carousel-item">
+            <img src="{% static 'assets/img/hero-carousel/hero-carousel-2.jpg' %}" alt="Industry-Relevant Courses" class="d-block w-100">
+            <div class="carousel-caption">
+                <h2 class="text-white">Industry-Relevant Tech Education</h2>
+                <p class="text-white">Learn from industry experts with courses designed to match current market demands and future trends.</p>
+                <a href="{% url 'courses' %}" class="btn btn-primary btn-lg">Explore Courses</a>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="carousel-item">
+            <img src="{% static 'assets/img/hero-carousel/hero-carousel-3.jpg' %}" alt="Tech Community" class="d-block w-100">
+            <div class="carousel-caption">
+                <h2 class="text-white">Join Our Thriving Tech Community</h2>
+                <p class="text-white">Connect with like-minded learners, experienced mentors, and industry professionals in our interactive virtual campus.</p>
+                <a href="{% url 'contact' %}" class="btn btn-primary btn-lg">Connect With Us</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Left and right controls/icons -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+<!-- STATIC CARDS: single block (3 cards) - appears overlapped on large screens, below carousel on small -->
+<div class="carousel-cards">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-md-4">
+                <div class="carousel-card">
+                    <i class="bi bi-laptop"></i>
+                    <h4>Online Learning</h4>
+                    <p>Access courses anytime, anywhere with our flexible online platform.</p>
+                    <a href="{% url 'courses' %}" class="btn btn-outline-primary btn-sm">Explore</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="carousel-card">
+                    <i class="bi bi-people"></i>
+                    <h4>Expert Mentors</h4>
+                    <p>Learn from industry professionals with years of experience.</p>
+                    <a href="{% url 'about' %}" class="btn btn-outline-primary btn-sm">Meet Our Team</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="carousel-card">
+                    <i class="bi bi-award"></i>
+                    <h4>Certification</h4>
+                    <p>Earn industry-recognized certificates to boost your career.</p>
+                    <a href="{% url 'services' %}" class="btn btn-outline-primary btn-sm">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section -->
+<section class="stats-section py-5 ">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <div class="stat-item">
+          <div class="stat-number counter" data-target="500">0</div>
+          <div class="stat-label">Students Enrolled</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <div class="stat-item">
+          <div class="stat-number counter" data-target="50">0</div>
+          <div class="stat-label">Expert Instructors</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6 mb-4 mb-lg-0">
+        <div class="stat-item">
+          <div class="stat-number counter" data-target="10">0</div>
+          <div class="stat-label">Courses Available</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-item">
+          <div class="stat-number counter" data-target="95" data-suffix="%">0</div>
+          <div class="stat-label">Completion Rate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center mb-4">
+                <h2 class="mb-2">What Our Students Say</h2>
+                <p class="lead" style="margin-bottom:12px;">Hear from our alumni who have transformed their careers through our programs.</p>
+            </div>
+        </div>
+
+        <div id="testimonialCarousel" class="carousel slide testimonial-carousel" data-bs-ride="carousel">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-4 col-md-6 mb-2">
+                            <div class="testimonial-card">
+                                <div class="testimonial-text">
+                                    "The Full Stack Development course completely changed my career trajectory. I went from a non-tech background to landing a developer job in just 6 months!"
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="author-img">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="author-info">
+                                        <h5>Sarah Johnson</h5>
+                                        <p>Full Stack Developer</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-2">
+                            <div class="testimonial-card">
+                                <div class="testimonial-text">
+                                    "The mentorship I received was invaluable. My mentor helped me not only with technical skills but also with interview preparation and career strategy."
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="author-img">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="author-info">
+                                        <h5>Michael Chen</h5>
+                                        <p>Data Scientist</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-2">
+                            <div class="testimonial-card">
+                                <div class="testimonial-text">
+                                    "The project-based approach meant I had a solid portfolio by the end of the course. Employers were impressed with the real-world applications I could demonstrate."
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="author-img">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="author-info">
+                                        <h5>Jessica Williams</h5>
+                                        <p>UX/UI Designer</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-item">
+                    <div class="row justify-content-center">
+                        <div class="col-lg-4 col-md-6">
+                            <div class="testimonial-card mb-2">
+                                <div class="testimonial-text">
+                                    "The flexible schedule allowed me to continue working while upgrading my skills. The support from instructors and peers made all the difference."
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="author-img">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="author-info">
+                                        <h5>David Thompson</h5>
+                                        <p>Software Engineer</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-2">
+                            <div class="testimonial-card">
+                                <div class="testimonial-text">
+                                    "I was able to transition from a completely different field into tech thanks to the comprehensive curriculum and supportive community at SirBrams."
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="author-img">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="author-info">
+                                        <h5>Amanda Rodriguez</h5>
+                                        <p>Frontend Developer</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-md-6 mb-2">
+                            <div class="testimonial-card">
+                                <div class="testimonial-text">
+                                    "The hands-on projects and real-world scenarios prepared me for actual job challenges. I felt confident and ready on my first day at work."
+                                </div>
+                                <div class="testimonial-author">
+                                    <div class="author-img">
+                                        <i class="bi bi-person-circle"></i>
+                                    </div>
+                                    <div class="author-info">
+                                        <h5>Robert Kim</h5>
+                                        <p>Cybersecurity Analyst</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+</section>
+
+<script>
+   
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // safe guards for custom toggles
+        let toggle = document.querySelector(".mobile-nav-toggle");
+        let menu = document.querySelector("#navmenu ul");
+        if (toggle && menu) {
+            toggle.addEventListener("click", function () {
+                menu.classList.toggle("show");
+            });
+        }
+
+        let sidebar = document.getElementById("sidebar");
+        if (sidebar) {
+            sidebar.addEventListener("click", function () {
+                document.querySelector(".sidebar").classList.toggle("active");
+            });
+        }
+
+        // Initialize testimonial carousel with autoplay (if element exists)
+        if (document.getElementById('testimonialCarousel')) {
+            var testimonialCarousel = new bootstrap.Carousel(document.getElementById('testimonialCarousel'), {
+                interval: 6000,
+                wrap: true
+            });
+        }
+
+        // Enhanced carousel caption animation (guarded)
+        const carousel = document.getElementById('demo');
+        if (carousel) {
+            carousel.addEventListener('slide.bs.carousel', function (e) {
+                // Reset all captions
+                const captions = document.querySelectorAll('.carousel-caption');
+                captions.forEach(caption => {
+                    caption.style.opacity = '0';
+                    const h2 = caption.querySelector('h2');
+                    const p = caption.querySelector('p');
+                    const btn = caption.querySelector('.btn');
+                    if (h2) h2.style.transform = 'translateY(20px)';
+                    if (p) p.style.transform = 'translateY(20px)';
+                    if (btn) btn.style.transform = 'translateY(20px)';
+                });
+            });
+
+            carousel.addEventListener('slid.bs.carousel', function (e) {
+                // Animate the active caption
+                const activeCaption = document.querySelector('.carousel-item.active .carousel-caption');
+                if (activeCaption) {
+                    activeCaption.style.opacity = '1';
+                    const h2 = activeCaption.querySelector('h2');
+                    const p = activeCaption.querySelector('p');
+                    const btn = activeCaption.querySelector('.btn');
+                    if (h2) h2.style.transform = 'translateY(0)';
+                    if (p) p.style.transform = 'translateY(0)';
+                    if (btn) btn.style.transform = 'translateY(0)';
+                }
+            });
+        }
+    });
+     document.addEventListener("DOMContentLoaded", () => {
+    const counters = document.querySelectorAll(".counter");
+    const speed = 100; // smaller = faster
+
+    const animateCounters = (entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const counter = entry.target;
+          const updateCounter = () => {
+            const target = +counter.getAttribute("data-target");
+            const suffix = counter.getAttribute("data-suffix") || "";
+            const count = +counter.innerText;
+            const increment = Math.ceil(target / speed);
+
+            if (count < target) {
+              counter.innerText = count + increment;
+              setTimeout(updateCounter, 30);
+            } else {
+              counter.innerText = target.toLocaleString() + suffix;
+            }
+          };
+          updateCounter();
+          observer.unobserve(counter); // run only once
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(animateCounters, { threshold: 0.5 });
+    counters.forEach(counter => observer.observe(counter));
+  });
+
+</script>
+{% endblock %}

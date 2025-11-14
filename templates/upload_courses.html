@@ -1,0 +1,402 @@
+{% extends 'admin_main.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<div class="container-fluid">
+    <div class="main-content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-lg mb-4">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                        <h4 class="mb-0"><i class="fas fa-book me-1"></i>Course Management</h4>
+                        <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#newCourseModal">
+                            <i class="fas fa-plus me-2"></i>New Course
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label for="courseSelect" class="form-label fw-bold">Select Course</label>
+                                <select class="form-select" id="courseSelect">
+                                    <option value="" selected disabled>-- Choose a course --</option>
+                                    {% for course in courses %}
+                                        <option value="{{ course.id }}" 
+                                            data-title="{{ course.title }}" 
+                                            data-code="{{ course.code }}" 
+                                            data-description="{{ course.description }}">
+                                            {{ course.title }} ({{ course.code }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Course Actions</label>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-outline-primary flex-fill" 
+                                            id="editCourseBtn" disabled 
+                                            data-bs-toggle="modal" data-bs-target="#editCourseModal">
+                                        <i class="fas fa-edit me-1"></i> Edit Course
+                                    </button>
+                                    <button class="btn btn-outline-danger flex-fill" 
+                                            id="deleteCourseBtn" disabled>
+                                        <i class="fas fa-trash me-1"></i> Delete Course
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module Management -->
+                <div class="card mb-4">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 text-primary"><i class="bi bi-folder me-2"></i>Modules</h4>
+                        <button class="btn btn-sm btn-primary" id="addModuleBtn" data-bs-toggle="modal" data-bs-target="#newModuleModal" disabled>
+                            <i class="fas fa-plus me-1"></i> Add Module
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="modules-container" id="modulesContainer">
+                            <!-- modules loaded dynamically via AJAX -->
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Select a Course to view and manage its Modules
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lesson Management -->
+                <div class="card">
+                    <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 text-primary"><i class="fas fa-chalkboard-teacher me-2"></i>Lessons</h4>
+                        <!-- keep this button global; JS will set the form action using the currently selected module -->
+                        <button class="btn btn-sm btn-primary" id="addLessonBtn" data-bs-toggle="modal" data-bs-target="#newLessonModal" disabled>
+                            <i class="fas fa-plus me-1"></i> Add Lesson
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="lessons-container" id="lessonsContainer">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>Select a module to view and manage its lessons
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Course Modal -->
+<div class="modal fade" id="newCourseModal" tabindex="-1" aria-labelledby="newCourseModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="newCourseModalLabel">
+                    <i class="fas fa-plus-circle me-2"></i>Create New Course
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" action="{% url 'mentor_courses' admininfo.id %}">
+                {% csrf_token %}
+                <input type="hidden" name="add_course" value="1">
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label fw-bold text-dark">Course Title</label>
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small">{{ form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label fw-bold text-dark">Description</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <div class="text-danger small">{{ form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.amount.id_for_label }}" class="form-label fw-bold text-dark">Course Fee (KES)</label>
+                        {{ form.amount }}
+                        {% if form.amount.errors %}
+                            <div class="text-danger small">{{ form.amount.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.duration.id_for_label }}" class="form-label fw-bold text-dark">Duration</label>
+                        {{ form.duration }}
+                        {% if form.duration.errors %}
+                            <div class="text-danger small">{{ form.duration.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.course_images.id_for_label }}" class="form-label fw-bold text-dark">Course Image</label>
+                        {{ form.course_images }}
+                        {% if form.course_images.errors %}
+                            <div class="text-danger small">{{ form.course_images.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Create Course
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- New Module Modal -->
+<div class="modal fade" id="newModuleModal" tabindex="-1" aria-labelledby="newModuleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="newModuleModalLabel"><i class="fas fa-folder-plus me-2"></i>Add New Module</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="newModuleForm" method="POST" action="{% url 'add_module' %}">
+                {% csrf_token %}
+                <input type="hidden" name="course_id" id="moduleCourseId">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="moduleTitle" class="form-label text-dark">Module Title</label>
+                        <input type="text" class="form-control" id="moduleTitle" name="module_title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="moduleOrder" class="form-label text-dark">Order</label>
+                        <input type="number" class="form-control" id="moduleOrder" name="order" min="1" value="1" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-primary">Topics & Subtopics</label>
+                        <div id="topicsContainer">
+                            <div class="topic-entry card mb-2">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0">Topic 1</h6>
+                                        <button type="button" class="btn btn-sm btn-danger remove-topic"><i class="fas fa-times"></i></button>
+                                    </div>
+                                    <input type="text" class="form-control mb-2 topic-title" name="topics[]" placeholder="Topic title" required>
+                                    <div class="subtopics-container">
+                                        <div class="input-group mb-2">
+                                            <input type="text" class="form-control subtopic-input" name="subtopics_1[]" placeholder="Subtopic">
+                                            <button class="btn btn-outline-secondary add-subtopic" type="button"><i class="fas fa-plus"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-primary mt-2" id="addTopicBtn">
+                            <i class="fas fa-plus me-1"></i> Add Another Topic
+                        </button>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Add Module</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Module Modal -->
+<div class="modal fade" id="editModuleModal" tabindex="-1" aria-labelledby="editModuleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editModuleModalLabel"><i class="fas fa-edit me-2"></i>Edit Module</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editModuleForm" method="POST" action="">
+                {% csrf_token %}
+                <input type="hidden" name="module_id" id="editModuleId">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editModuleTitle" class="form-label text-dark">Module Title</label>
+                        <input type="text" class="form-control" id="editModuleTitle" name="module_title" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editModuleOrder" class="form-label text-dark">Order</label>
+                        <input type="number" class="form-control" id="editModuleOrder" name="order" min="1" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- New Lesson Modal -->
+<div class="modal fade" id="newLessonModal" tabindex="-1" aria-labelledby="newLessonModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="newLessonModalLabel"><i class="fas fa-file-alt me-2"></i>Add New Lesson</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <form id="addLessonForm" enctype="multipart/form-data" method="POST" action="#">
+        {% csrf_token %}
+        <!-- Module FK -->
+        <input type="hidden" id="lessonModuleId" name="module_id" value="">
+
+        <div class="modal-body">
+          <!-- Title & Order -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="lessonTitle" class="form-label text-dark"><i class="fas fa-chalkboard-teacher text-info"></i> Lesson Title</label>
+                <input type="text" class="form-control" id="lessonTitle" name="title" required>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="lessonOrder" class="form-label text-dark">Order</label>
+                <input type="number" class="form-control" id="lessonOrder" name="order" min="1" value="1" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="mb-3">
+            <label for="lessonContent" class="form-label text-dark"><i class="fas fa-file-word text-info"></i> Content</label>
+            <textarea class="form-control" id="lessonContent" name="content" rows="6" placeholder="Enter lesson content here..."></textarea>
+          </div>
+
+          <!-- Video Section -->
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label for="lessonVideoType" class="form-label text-dark"><i class="fas fa-play-circle text-info"></i> Video Type</label>
+                <select class="form-select" id="lessonVideoType" name="video_type">
+                  <option value="none">No Video</option>
+                  <option value="youtube">YouTube</option>
+                  <option value="upload">Upload Video</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3" id="youtubeUrlContainer">
+                <label for="lessonYoutubeUrl" class="form-label text-dark">YouTube URL</label>
+                <input type="url" class="form-control" id="lessonYoutubeUrl" name="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
+              </div>
+              <div class="mb-3" id="videoUploadContainer" >
+                <label for="lessonVideo" class="form-label text-dark">Upload Video</label>
+                <input class="form-control" type="file" id="lessonVideo" name="video" accept="video/*">
+              </div>
+            </div>
+          </div>
+
+          <!-- Resources -->
+          <div class="mb-3">
+            <label class="form-label text-dark"><i class="fas fa-file text-info"></i> Resources</label>
+
+            <!-- Notes -->
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <h6 class="mb-0 text-dark"><i class="fas fa-file-alt me-2 text-info"></i>Notes (PDF, DOC, etc.)</h6>
+              </div>
+              <div class="card-body">
+                <input class="form-control" type="file" id="lessonNotes" name="notes" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+              </div>
+            </div>
+
+            <!-- Recordings -->
+            <div class="card mb-3">
+              <div class="card-header bg-light">
+                <h6 class="mb-0 text-dark"><i class="fas fa-file-audio me-2 text-info"></i>Recordings (Audio/Video)</h6>
+              </div>
+              <div class="card-body">
+                <input class="form-control" type="file" id="lessonRecording" name="recording" accept="audio/*,video/*">
+              </div>
+            </div>
+
+            <!-- Links -->
+            <div class="card">
+              <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 text-dark"><i class="fas fa-link me-2 text-info"></i>Useful Links</h6>
+                <button type="button" class="btn btn-sm btn-outline-primary" id="addLinkBtn">
+                  <i class="fas fa-plus me-1"></i> Add Link
+                </button>
+              </div>
+              <div class="card-body">
+                <div id="linksContainer">
+                  <div class="input-group mb-2">
+                    <input type="url" class="form-control" name="links[]" placeholder="https://example.com">
+                    <button class="btn btn-outline-danger remove-link" type="button"><i class="fas fa-times"></i></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary"><i class="fas fa-save me-2"></i>Add Lesson</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete Module Confirmation Modal -->
+<div class="modal fade" id="deleteModuleModal" tabindex="-1" aria-labelledby="deleteModuleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModuleModalLabel"><i class="fas fa-trash me-2"></i>Confirm Delete</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this module? This action cannot be undone.</p>
+                <p class="text-muted">All lessons and content within this module will also be deleted.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form id="deleteModuleForm" method="POST" action="">
+                    {% csrf_token %}
+                    <input type="hidden" name="module_id" id="deleteModuleId">
+                    <button type="submit" class="btn btn-danger">Delete Module</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Toast -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+    <div id="successToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header bg-success text-white">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="toastMessage">
+            Operation completed successfully.
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'JS/scripts.js' %}"></script>
+<br><br>
+{% endblock %}
